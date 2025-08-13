@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Version: 1.0.1
+# Version: 1.0.2
 # OpenWRT MQTT Reporter with UCI configuration support
 
 import time
@@ -298,7 +298,7 @@ def publish_binary_sensor(iface, key, name, payload_on, payload_off, icon):
         "availability_topic": f"{BASE_TOPIC}/{iface}/availability",
         "payload_available": "online",
         "payload_not_available": "offline",
-        "name": f"{label} {name}",
+        "name": name,
         "state_topic": f"{BASE_TOPIC}/{iface}/{key}",
         "payload_on": payload_on,
         "payload_off": payload_off,
@@ -324,7 +324,7 @@ def publish_sensor(iface, key, name, unit, device_class, icon):
         "availability_topic": f"{BASE_TOPIC}/{iface}/availability",
         "payload_available": "online",
         "payload_not_available": "offline",
-        "name": f"{label} {name}",
+        "name": name,
         "state_topic": f"{BASE_TOPIC}/{iface}/{key}",
         "icon": icon,
         "unique_id": f"{BASE_TOPIC}_{iface}_{key}",
@@ -349,7 +349,7 @@ def publish_discovery():
         publish_sensor(iface, "ipv4", "IPv4", None, None, "mdi:ip")
     for iface in VIRTUAL_INTERFACES:
         label = INTERFACE_LABELS.get(iface, iface.upper())
-        publish_binary_sensor(iface, "status", f"{label} Stav", "online", "offline", "mdi:wan")
+        publish_binary_sensor(iface, "status", "Stav", "online", "offline", "mdi:wan")
         publish_sensor(iface, "ipv6", "IPv6", None, None, "mdi:ip")
     
     # MWAN3 sensors s vlastním device
