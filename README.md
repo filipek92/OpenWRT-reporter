@@ -217,7 +217,63 @@ uci commit openwrt-reporter
 - `openwrt-reporter.uci` - UCI konfigurace
 - `install.sh` - Instalační script
 - `uninstall.sh` - Odinstalační script
+- `update.sh` - Update script (lokální soubory)
+- `update-from-github.sh` - Update z GitHubu
+- `check-version.sh` - Kontrola verze a stavu
 - `README.md` - Dokumentace
+
+## Aktualizace
+
+### Lokální update (máte soubory)
+```bash
+# Zkopírujte nové soubory na router
+scp *.py *.init *.sh *.uci root@192.168.1.1:/tmp/
+
+# Spusťte update
+ssh root@192.168.1.1
+cd /tmp
+chmod +x update.sh
+./update.sh
+```
+
+### Automatický update z GitHubu
+```bash
+# Stáhne a nainstaluje nejnovější verzi
+ssh root@192.168.1.1
+wget -O /tmp/update-github.sh https://raw.githubusercontent.com/filipek92/OpenWRT-reporter/main/update-from-github.sh
+chmod +x /tmp/update-github.sh
+/tmp/update-github.sh
+```
+
+### Kontrola verze
+```bash
+# Zobrazí informace o nainstalované verzi
+./check-version.sh
+```
+
+## Makefile (pro vývojáře)
+
+Pro snadnou správu z vývojového prostředí:
+
+```bash
+# Zobrazí nápovědu
+make help
+
+# Nasazení a instalace
+make install ROUTER_IP=192.168.1.1
+
+# Update existující instalace
+make update ROUTER_IP=192.168.1.1
+
+# Kontrola stavu
+make status ROUTER_IP=192.168.1.1
+
+# Zobrazení logů
+make logs ROUTER_IP=192.168.1.1
+
+# Restart služby
+make restart ROUTER_IP=192.168.1.1
+```
 
 ## Odinstalace
 

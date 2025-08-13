@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Version: 1.0.0
+# OpenWRT MQTT Reporter with UCI configuration support
 
 import time
 import json
