@@ -20,10 +20,13 @@ if [ ! -f "/etc/init.d/openwrt-reporter" ]; then
 fi
 
 # Backup current configuration
-echo "Backing up current configuration..."
+echo "Creating configuration backup..."
 if [ -f "/etc/config/openwrt-reporter" ]; then
     cp /etc/config/openwrt-reporter /tmp/openwrt-reporter.config.backup
-    echo "Configuration backed up to /tmp/openwrt-reporter.config.backup"
+    echo "Configuration backed up to /tmp/openwrt-reporter.config.backup (for safety)"
+    echo "Note: Your configuration will be preserved during update"
+else
+    echo "No existing configuration found"
 fi
 
 # Stop the service
@@ -54,21 +57,26 @@ fi
 if [ -f "openwrt-reporter.uci" ] && [ -f "/tmp/openwrt-reporter.config.backup" ]; then
     echo "Checking for configuration updates..."
     
-    # Check if there are new configuration options
-    if ! diff -q openwrt-reporter.uci /etc/config/openwrt-reporter >/dev/null 2>&1; then
-        echo "New configuration options detected."
-        echo "Current config backed up. You may need to manually merge new options."
-        echo "New template: openwrt-reporter.uci"
-        echo "Your config: /tmp/openwrt-reporter.config.backup"
+    # Check if there are new configuration options by comparing structure
+    NEW_SECTIONS=$(grep "^config " openwrt-reporter.uci | sort)
+    OLD_SECTIONS=$(grep "^config " /etc/config/openwrt-reporter 2>/dev/null | sort || echo "")
+    
+    if [ "$NEW_SECTIONS" != "$OLD_SECTIONS" ]; then
+        echo "New configuration sections detected in template."
+        echo "Your current configuration is preserved."
         echo ""
-        echo "To see differences:"
-        echo "  diff /tmp/openwrt-reporter.config.backup openwrt-reporter.uci"
+        echo "New template available: openwrt-reporter.uci"
+        echo "Your config: /etc/config/openwrt-reporter"
         echo ""
-        echo "To reset to new template (will lose current settings):"
-        echo "  cp openwrt-reporter.uci /etc/config/openwrt-reporter"
+        echo "To see new options:"
+        echo "  diff /etc/config/openwrt-reporter openwrt-reporter.uci"
+        echo ""
+        echo "Note: Your configuration is automatically preserved during updates."
     else
-        echo "No configuration changes needed"
+        echo "No new configuration sections found"
     fi
+else
+    echo "Preserving existing configuration (no changes needed)"
 fi
 
 # Test configuration

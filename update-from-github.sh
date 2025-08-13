@@ -86,10 +86,11 @@ if [ -f "update.sh" ]; then
 else
     echo "Warning: update.sh not found, running manual update..."
     
-    # Backup current configuration
-    echo "Backing up current configuration..."
+    # Backup current configuration (preserve it)
+    echo "Creating configuration backup..."
     if [ -f "/etc/config/openwrt-reporter" ]; then
         cp /etc/config/openwrt-reporter /tmp/openwrt-reporter.config.backup
+        echo "Configuration preserved (backup created for safety)"
     fi
     
     # Stop service

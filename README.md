@@ -224,12 +224,14 @@ uci commit openwrt-reporter
 
 ## Aktualizace
 
+**Poznámka:** Všechny update skripty zachovávají vaši UCI konfiguraci. Žádná nastavení se neztratí.
+
 ### Lokální update (máte soubory)
 ```bash
 # Zkopírujte nové soubory na router
 scp *.py *.init *.sh *.uci root@192.168.1.1:/tmp/
 
-# Spusťte update
+# Spusťte update - konfigurace se zachová
 ssh root@192.168.1.1
 cd /tmp
 chmod +x update.sh
@@ -238,7 +240,7 @@ chmod +x update.sh
 
 ### Automatický update z GitHubu
 ```bash
-# Stáhne a nainstaluje nejnovější verzi
+# Stáhne a nainstaluje nejnovější verzi - konfigurace se zachová
 ssh root@192.168.1.1
 wget -O /tmp/update-github.sh https://raw.githubusercontent.com/filipek92/OpenWRT-reporter/main/update-from-github.sh
 chmod +x /tmp/update-github.sh
