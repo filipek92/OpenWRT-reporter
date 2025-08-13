@@ -11,6 +11,7 @@ from paho.mqtt import client as mqtt
 
 # --- Configuration ---
 VERBOSE = "--verbose" in sys.argv
+SHOW_CONFIG = "--config" in sys.argv
 
 # Load UCI configuration
 def load_uci_config():
@@ -131,23 +132,8 @@ def get_default_config():
 
 # Load configuration
 CONFIG = load_uci_config()
-if not CONFIG['enabled']:
-    print("[INFO] OpenWRT Reporter is disabled in configuration")
-    sys.exit(0)
 
 VERBOSE = CONFIG['verbose']  # Update VERBOSE from config
-
-# Thread safety
-mqtt_lock = threading.Lock()
-stats_lock = threading.Lock()
-
-# Apply configuration
-MQTT_HOST = CONFIG['mqtt']['host']
-MQTT_PORT = CONFIG['mqtt']['port'] 
-MQTT_USERNAME = CONFIG['mqtt']['username']
-MQTT_PASSWORD = CONFIG['mqtt']['password']
-BASE_TOPIC = CONFIG['mqtt']['base_topic']
-DISCOVERY_PREFIX = CONFIG['mqtt']['discovery_prefix']
 
 # Build interface lists from config
 BASE_INTERFACES = [i['name'] for i in CONFIG['interfaces']['base']]
@@ -158,6 +144,57 @@ ALL_INTERFACES = BASE_INTERFACES + VIRTUAL_INTERFACES
 INTERFACE_LABELS = {}
 for iface in CONFIG['interfaces']['base'] + CONFIG['interfaces']['virtual']:
     INTERFACE_LABELS[iface['name']] = iface.get('label', iface['name'].upper())
+
+# Show configuration and exit if requested
+if SHOW_CONFIG:
+    print("=== OpenWRT MQTT Reporter Configuration ===")
+    print()
+    print(f"Service enabled: {CONFIG['enabled']}")
+    print(f"Verbose logging: {CONFIG['verbose']}")
+    print()
+    print("MQTT Configuration:")
+    print(f"  Host: {CONFIG['mqtt']['host']}")
+    print(f"  Port: {CONFIG['mqtt']['port']}")
+    print(f"  Username: {CONFIG['mqtt']['username'] or '(none)'}")
+    print(f"  Password: {'***' if CONFIG['mqtt']['password'] else '(none)'}")
+    print(f"  Base topic: {CONFIG['mqtt']['base_topic']}")
+    print(f"  Discovery prefix: {CONFIG['mqtt']['discovery_prefix']}")
+    print()
+    print("Base Interfaces:")
+    if CONFIG['interfaces']['base']:
+        for iface in CONFIG['interfaces']['base']:
+            print(f"  {iface['name']}: {iface.get('label', 'N/A')} (IPv4:{iface.get('monitor_ipv4', True)}, IPv6:{iface.get('monitor_ipv6', False)})")
+    else:
+        print("  (none)")
+    print()
+    print("Virtual Interfaces:")
+    if CONFIG['interfaces']['virtual']:
+        for iface in CONFIG['interfaces']['virtual']:
+            print(f"  {iface['name']}: {iface.get('label', 'N/A')} (IPv4:{iface.get('monitor_ipv4', False)}, IPv6:{iface.get('monitor_ipv6', True)})")
+    else:
+        print("  (none)")
+    print()
+    print("All monitored interfaces:", ', '.join(ALL_INTERFACES) if ALL_INTERFACES else '(none)')
+    print()
+    sys.exit(0)
+
+if not CONFIG['enabled']:
+    print("[INFO] OpenWRT Reporter is disabled in configuration")
+    sys.exit(0)
+
+VERBOSE = CONFIG['verbose']  # Update VERBOSE from config
+
+# Apply configuration
+MQTT_HOST = CONFIG['mqtt']['host']
+MQTT_PORT = CONFIG['mqtt']['port'] 
+MQTT_USERNAME = CONFIG['mqtt']['username']
+MQTT_PASSWORD = CONFIG['mqtt']['password']
+BASE_TOPIC = CONFIG['mqtt']['base_topic']
+DISCOVERY_PREFIX = CONFIG['mqtt']['discovery_prefix']
+
+# Thread safety
+mqtt_lock = threading.Lock()
+stats_lock = threading.Lock()
 
 client = mqtt.Client()
 

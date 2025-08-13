@@ -95,6 +95,16 @@ uci commit openwrt-reporter
 python3 /usr/bin/openwrt-reporter.py --verbose
 ```
 
+## Testování konfigurace
+
+```bash
+# Zobrazení aplikované konfigurace bez spuštění služby
+python3 /usr/bin/openwrt-reporter.py --config
+
+# Kombinace s verbose pro detailní výstup
+python3 /usr/bin/openwrt-reporter.py --config --verbose
+```
+
 ## MQTT Topiky
 
 ### Dostupnost
@@ -134,6 +144,9 @@ Entity se automaticky objeví v Home Assistant díky MQTT Discovery. Najdete je 
 
 ### Script se nespustí
 ```bash
+# Zkontrolujte konfiguraci
+python3 /usr/bin/openwrt-reporter.py --config
+
 # Zkontrolujte Python3
 python3 --version
 
