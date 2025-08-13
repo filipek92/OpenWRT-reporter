@@ -121,11 +121,10 @@ def get_default_config():
         },
         'interfaces': {
             'base': [
-                {'name': 'wan', 'label': 'StarNet', 'enabled': True, 'monitor_ipv4': True, 'monitor_ipv6': False},
-                {'name': 'wanb', 'label': 'Vodafone LTE', 'enabled': True, 'monitor_ipv4': True, 'monitor_ipv6': False}
+                {'name': 'wan', 'label': 'Wan', 'enabled': True, 'monitor_ipv4': True, 'monitor_ipv6': False},
             ],
             'virtual': [
-                {'name': 'wan6', 'label': 'StarNet', 'enabled': True, 'monitor_ipv4': False, 'monitor_ipv6': True}
+                {'name': 'wan6', 'label': 'Wan6', 'enabled': True, 'monitor_ipv4': False, 'monitor_ipv6': True}
             ]
         }
     }
