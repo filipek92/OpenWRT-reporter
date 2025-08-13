@@ -48,6 +48,8 @@ def load_uci_config():
             key, value = line.split('=', 1)
             value = value.strip("'\"")
             
+            if VERBOSE: print(f"[DEBUG] Parsing UCI: {key} = {value}")
+            
             # Parse configuration
             if 'global.enabled' in key:
                 config['enabled'] = value == '1'
@@ -59,14 +61,15 @@ def load_uci_config():
                     config['mqtt']['port'] = int(value)
                 else:
                     config['mqtt'][mqtt_key] = value
-            elif '.interface.' in key and '=interface' not in key:
-                # Parse interface config
+            elif '=interface' in line:
+                # This is interface section definition, skip
+                continue
+            elif key.count('.') >= 2 and not any(x in key for x in ['global.', 'mqtt.']):
+                # Parse interface config: openwrt-reporter.wan.enabled
                 parts = key.split('.')
-                if len(parts) >= 4:
-                    iface_name = parts[1].replace('openwrt-reporter', '').strip('@[]')
-                    if iface_name.isdigit():
-                        continue  # Skip numeric indices
-                    attr = parts[-1]
+                if len(parts) >= 3:
+                    iface_name = parts[1]  # wan, wanb, wan6, etc.
+                    attr = parts[2]       # enabled, type, label, etc.
                     
                     # Find or create interface config
                     iface_config = None
@@ -90,6 +93,8 @@ def load_uci_config():
                             config['interfaces']['virtual'].remove(iface_config)
                             config['interfaces']['base'].append(iface_config)
                         iface_config['type'] = value
+                    elif attr in ['monitor_ipv4', 'monitor_ipv6']:
+                        iface_config[attr] = value == '1'
                     else:
                         iface_config[attr] = value
                         
