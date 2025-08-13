@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Version: 1.0.0
+# Version: 1.0.1
 # OpenWRT MQTT Reporter with UCI configuration support
 
 import time
@@ -370,6 +370,7 @@ def publish_discovery():
             "availability_topic": f"{BASE_TOPIC}/mwan3/availability",
             "payload_available": "online",
             "payload_not_available": "offline",
+            "device_class": "enum",
             "options": ["wan", "wanb", "unknown"],
             "device": mwan_device_info
         }), retain=True
@@ -385,6 +386,7 @@ def publish_discovery():
             "availability_topic": f"{BASE_TOPIC}/mwan3/availability",
             "payload_available": "online",
             "payload_not_available": "offline",
+            "device_class": "enum",
             "options": ["StarNet", "Vodafone LTE", "unknown"],
             "device": mwan_device_info
         }), retain=True
