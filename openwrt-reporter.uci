@@ -1,0 +1,44 @@
+# UCI Configuration for OpenWRT Reporter
+# Save this as /etc/config/openwrt-reporter
+
+config global 'global'
+	option enabled '1'
+	option verbose '0'
+
+config mqtt 'mqtt'
+	option host 'mqtt.lan'
+	option port '1883'
+	option username ''
+	option password ''
+	option base_topic 'openwrt'
+	option discovery_prefix 'homeassistant'
+
+config interface 'wan'
+	option enabled '1'
+	option type 'base'
+	option label 'StarNet'
+	option monitor_ipv4 '1'
+	option monitor_ipv6 '0'
+
+config interface 'wanb'
+	option enabled '1'
+	option type 'base'
+	option label 'Vodafone LTE'
+	option monitor_ipv4 '1'
+	option monitor_ipv6 '0'
+
+config interface 'wan6'
+	option enabled '1'
+	option type 'virtual'
+	option label 'StarNet'
+	option monitor_ipv4 '0'
+	option monitor_ipv6 '1'
+
+# Example commands:
+# uci set openwrt-reporter.global.verbose=1
+# uci set openwrt-reporter.mqtt.host='192.168.1.100'
+# uci add openwrt-reporter interface
+# uci set openwrt-reporter.@interface[-1].name='wan3'
+# uci set openwrt-reporter.@interface[-1].label='Třetí WAN'
+# uci commit openwrt-reporter
+# /etc/init.d/openwrt-reporter restart
